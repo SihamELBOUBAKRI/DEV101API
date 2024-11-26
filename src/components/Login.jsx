@@ -2,75 +2,61 @@ import React, { useState } from "react";
 import axios from "axios";
 import List from "./List";
 
-const Login = ({ setIsConected }) => {
-  const [cin, setCin] = useState("");
-  const [password, setPassword] = useState("");
-  const [data, setData] = useState({});
-  const [response, setResponse] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const Login = () => {
+  const [cin,setcin]=useState("");
+  const [password,setpassword]=useState("");
+  const [userloged,setuserloged]=useState(false);
+  const [token,settoken]=useState("");
+  const [userInfo,setuserInfo]=useState({});
 
-  const StoreData = async () => {
-    try {
-      const resp = await axios.post("https://notes.devlop.tech/api/login", {
-        cin,
-        password,
-      });
-      console.log("Login Response:", resp); // Log the entire response
-      console.log("Token:", resp.data.token);
+  const onloginclick=async (e)=>{
 
-      if (resp.status === 200) {
-        const token = resp.data.token; // Assuming the API returns a `token` field
-        localStorage.setItem("token", token); // Save the token in localStorage
-        setData({ cin, password });
-        setIsConected(true);
-        setIsLoggedIn(true); // Update the state to show the List component
-      } else {
-        console.log("Login failed");
-      }
-    } catch (err) {
-      console.error("Error logging in:", err);
+    e.preventDefault();
+    try{
+    const res=await axios.post("https://notes.devlop.tech/api/login",{cin,password})
+    console.log(res)
+    if(res.status==200){
+      setuserloged(true)
+      settoken(res.data.token)
+      setuserInfo({
+        userfirstname:res.data.user.first_name,
+        userlastname:res.data.user.last_name,
+      })
     }
-  };
+  }
+    catch(err){
+      console.log("loging failed")
+      setuserloged(false)
+      console.log(userloged)
+    }
+    
+  }
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setData({});
-    setIsConected(false);
-    setIsLoggedIn(false); // Reset the state to show the login form
-  };
-
-  return (
+  
+  return(
     <div>
-      {!isLoggedIn ? (
-        <form method="post" onSubmit={(e) => e.preventDefault()}>
-          <label>cin:</label>
+     {userloged ?  (
+        <List token={token} userInfo={userInfo}/>
+      ):(
+        <form action="">
           <input
             type="text"
             value={cin}
-            onChange={(e) => setCin(e.target.value)}
+            onChange={(e) => setcin(e.target.value)}
+            placeholder="CIN"
           />
-          <br />
-          <label>Password:</label>
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setpassword(e.target.value)}
+            placeholder="Password"
           />
-          <br />
-          <button type="submit" onClick={StoreData}>
-            Login
-          </button>
+          <button onClick={onloginclick}>Login</button>
         </form>
-      ) : (
-        <div>
-          <p>Welcome, {response.data.user.first_name}</p>
-          <button onClick={logout}>Logout</button>
-          {/* Pass the token to the List component */}
-          <List token={localStorage.getItem("token")} />
-        </div>
-      )}
+      ) }
+      
     </div>
-  );
+  )
 };
 
 export default Login;

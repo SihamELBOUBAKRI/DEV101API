@@ -1,8 +1,123 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const List = () => {
-  const [notes, setNotes] = useState([]);
+const List = ({token,userInfo}) => {
+  const [notes,setNotes]=useState([]);
+
+  useEffect(()=>{
+    const getNotes = async()=>{
+      try{
+        const res =await axios.get("https://notes.devlop.tech/api/notes",{ headers: {Authorization:`Bearer ${token}`}}
+        );
+        setNotes(res.data)
+      }catch(err){
+        console.error('there no notes ',err)
+      }
+    }
+    getNotes();
+  }
+
+  ,[token]
+)
+
+
+  return(
+    <div>
+      <h1>HALLO {userInfo.userlastname} {userInfo.userfirstname}</h1>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <td>YOU NOTES</td>
+            <td>ACTIONS</td>
+          </tr>
+          
+        </thead>
+        <tbody>
+            {notes.map((note)=>(
+            <tr key={note.id}>
+              <td>{note.content}</td>
+              <td>
+                <button>delete</button>
+                <button>update</button>
+              </td>
+            </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
+  )
+};
+
+export default List;
+
+
+
+/*import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const List = ({ token, userInfo }) => {
+  const [notes, setNotes] = useState([]); // Use lowercase "notes" for consistency
+
+  useEffect(() => {
+    const getNotes = async () => {
+      try {
+        const res = await axios.get("https://notes.devlop.tech/api/notes", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Fix header typo and spacing
+          },
+        });
+        setNotes(res.data); // Assuming API response is an array of notes
+      } catch (err) {
+        console.error("Failed to fetch notes:", err);
+      }
+    };
+    getNotes();
+  }, [token]); // Dependency array ensures this only runs when the token changes
+
+  return (
+    <div>
+      <h1>
+        HALLO {userInfo.userlastname} {userInfo.userfirstname}
+      </h1>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <td>YOUR NOTES</td>
+            <td>ACTIONS</td>
+          </tr>
+        </thead>
+        <tbody>
+          {notes.map((note) => (
+            <tr key={note.id}>
+              <td>{note.content}</td>
+              <td>
+                <button>Delete</button>
+                <button>Update</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default List;
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*const [notes, setNotes] = useState([]);
   const [error, setError] = useState("");
   const [editNoteId, setEditNoteId] = useState(null);
   const [editContent, setEditContent] = useState("");
@@ -31,7 +146,7 @@ const List = () => {
   // Delete a note
   const deleteNote = async (id) => {
     try {
-      await axios.delete(`https://notes.devlop.tech/api//notes/:${id}`, {
+      await axios.delete(`https://notes.devlop.tech/api/notes/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -45,9 +160,7 @@ const List = () => {
 
   // Update a note
   const updateNote = async (id) => {
-    try {
-      await axios.put(
-        `https://notes.devlop.tech/api/notes/:${id}`,
+      await axios.put(`https://notes.devlop.tech/api/notes/${id}`,
         { content: editContent },
         {
           headers: {
@@ -62,17 +175,14 @@ const List = () => {
         )
       );
       setEditNoteId(null); // Exit edit mode
-    } catch (err) {
-      console.error("Error updating note:", err.response || err.message);
-      setError("Failed to update the note. Please try again.");
-    }
+    
   };
 
   // Share a note
   const shareNote = async (id, recipientId) => {
     try {
       await axios.post(
-        `https://notes.devlop.tech/api/notes/:${id}/share`,
+        `https://notes.devlop.tech/api/notes/${id}/share`,
         { userId: recipientId },
         {
           headers: {
@@ -148,7 +258,4 @@ const List = () => {
         <p>No notes available.</p>
       )}
     </div>
-  );
-};
-
-export default List;
+  ); */
